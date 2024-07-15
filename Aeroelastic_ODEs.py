@@ -9,7 +9,7 @@ class aeroelastic_spring_mdl:
         self.f = f_flap
         self.A = A_flap
         #self.k_spring = k_spring #An equivalent torsional spring coefficient (Could be calculated with length to center of pressure in spanwise direction)
-        self.k_spring = 0.05*(G_section * J_section / cpy)
+        self.k_spring = (G_section * J_section / cpy)
         self.g = g
         self.Ixx = I[0][0]
         self.Ixy = I[0][1]
@@ -40,7 +40,7 @@ class aeroelastic_spring_mdl:
         return x
     
 if __name__ == "__main__":
-    f = 5 #Hz
+    f = 10 #Hz
     A_flap = 30*(np.pi/180) #radians maximum amplitude
     b_span = 0.3 #meters
     cpy = b_span/2
