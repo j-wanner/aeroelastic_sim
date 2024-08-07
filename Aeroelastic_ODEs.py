@@ -23,7 +23,7 @@ class aeroelastic_spring_mdl:
         # M_aero_root comes from Ptera, sum of all aerodynamic Moments about the leading edge twist direction that are computed from segements in Ptera 
         phi = self.A * np.sin(2*np.pi*self.f*t)
         phi_dot = 2*np.pi*self.f*self.A * np.cos(2*np.pi*self.f*t)
-        phi_dot_dot = -((2*np.pi*self.f*self.A)**2) * np.sin(2*np.pi*self.f*t)
+        phi_dot_dot = -((2*np.pi*self.f)**2) * self.A * np.sin(2*np.pi*self.f*t)
 
         psi, psi_dot = x
         x0_dot = psi_dot
@@ -40,7 +40,7 @@ class aeroelastic_spring_mdl:
         return x
     
 if __name__ == "__main__":
-    f = 10 #Hz
+    f = 5 #Hz
     A_flap = 30*(np.pi/180) #radians maximum amplitude
     b_span = 0.3 #meters
     cpy = b_span/2
@@ -63,22 +63,22 @@ if __name__ == "__main__":
     M_aero_root_const = 0.0 #Aero currently turned off
 
     # # Simulate ode without aero
-    x = odeint(mdl.ode_definition, x_0, t, args=(M_aero_root_const,))
-    plt.plot(t, x[:, 0]*(180/np.pi), 'b', label='psi(t) in degrees')
-    plt.plot(t, A_flap * np.sin(2*np.pi*f*t)*(180/np.pi))
-    #plt.plot(t, x[:, 1], 'g', label='psi_dot(t)')
-    plt.show()
+    # x = odeint(mdl.ode_definition, x_0, t, args=(M_aero_root_const,))
+    # plt.plot(t, x[:, 0]*(180/np.pi), 'b', label='psi(t) in degrees')
+    # plt.plot(t, A_flap * np.sin(2*np.pi*f*t)*(180/np.pi))
+    # #plt.plot(t, x[:, 1], 'g', label='psi_dot(t)')
+    # plt.show()
 
-    print("Approximated critical excitation resonance frequency: " + str(mdl.f_crit))
+    # print("Approximated critical excitation resonance frequency: " + str(mdl.f_crit))
 
     # Solve simulation with changing aero one step at a time in loop
-    # x_sol = [x_0]
-    # for k in t[:-1]:
-    #     M_aero = 0.0 #-5.0*np.sin(2*np.pi*f*k)
-    #     x_sol.append(mdl.state_update_call(x_sol[-1],M_aero,dt_sim,k))
+    x_sol = [x_0]
+    for k in t[:-1]:
+        M_aero = -20.0*np.cos(2*np.pi*f*k)
+        x_sol.append(mdl.state_update_call(x_sol[-1],M_aero,dt_sim,k))
     
-    # x_sol = np.array(x_sol)
-    # plt.plot(t, x_sol[:,0]*(180/np.pi))
+    x_sol = np.array(x_sol)
+    plt.plot(t, x_sol[:,0]*(180/np.pi))
 
 
 
